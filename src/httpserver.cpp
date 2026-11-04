@@ -35,6 +35,7 @@
 #include <netinet/in.h>
 #ifdef _XOPEN_SOURCE_EXTENDED
 #include <arpa/inet.h>
+#include <deque>
 #endif
 #endif
 

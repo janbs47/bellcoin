@@ -32,6 +32,7 @@
 #include <utilstrencodings.h>
 
 #include <memory>
+#include <array>
 
 #if defined(NDEBUG)
 # error "Bellcoin cannot be compiled without assertions."
