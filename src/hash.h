@@ -183,6 +183,11 @@ public:
 
 extern "C" void yespower_hash(const char *input, char *output);
 
+/** yespower del contenido serializado, con cache: el hash es una funcion pura de
+ *  los bytes y GetHash() se pide muchas veces para la misma cabecera durante la
+ *  sincronizacion (cada yespower cuesta varios ms). */
+uint256 YespowerHashCached(const std::vector<unsigned char>& data);
+
 class CHashWriterYespower: public CHashWriter
 {
 private:
@@ -197,9 +202,7 @@ public:
     }
 
     uint256 GetHash() {
-        uint256 result;
-        yespower_hash((const char*)buf.data(), (char*)&result);
-        return result;
+        return YespowerHashCached(buf);
     }
 
     template<typename T>

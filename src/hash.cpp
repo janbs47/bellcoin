@@ -6,6 +6,32 @@
 #include <crypto/common.h>
 #include <crypto/hmac_sha512.h>
 
+#include <mutex>
+#include <string>
+#include <unordered_map>
+
+uint256 YespowerHashCached(const std::vector<unsigned char>& data)
+{
+    static std::mutex cs;
+    static std::unordered_map<std::string, uint256> cache;
+    static const size_t MAX_ENTRIES = 200000;
+
+    std::string key(data.begin(), data.end());
+    {
+        std::lock_guard<std::mutex> lock(cs);
+        auto it = cache.find(key);
+        if (it != cache.end()) return it->second;
+    }
+    uint256 result;
+    yespower_hash((const char*)data.data(), (char*)&result);
+    {
+        std::lock_guard<std::mutex> lock(cs);
+        if (cache.size() >= MAX_ENTRIES) cache.clear();
+        cache.emplace(std::move(key), result);
+    }
+    return result;
+}
+
 
 inline uint32_t ROTL32(uint32_t x, int8_t r)
 {
